@@ -68,7 +68,9 @@ pub fn serve() -> Result<()> {
                     }
                 },
                 Token(id) => loop {
-                    let connection = connections.get_mut(&id).unwrap();
+                    let Some(connection) = connections.get_mut(&id) else {
+                        break;
+                    };
 
                     match connection.read() {
                         Ok(ref n) if *n == 0 => {
@@ -77,7 +79,8 @@ pub fn serve() -> Result<()> {
                             break;
                         }
                         Ok(_) => {
-                            let text = str::from_utf8(&connection.buf).unwrap().trim();
+                            let text = String::from_utf8_lossy(&connection.buf);
+                            let text = text.trim();
                             println!("received {text} from client {id}");
                         }
                         Err(ref e) if would_block(e) => break,
