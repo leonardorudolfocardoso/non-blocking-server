@@ -33,11 +33,10 @@ impl Connection {
 type Id = usize;
 type Connections = HashMap<Id, Connection>;
 
-pub fn serve() -> Result<()> {
+pub fn serve(addr: SocketAddr) -> Result<()> {
     let mut poll = Poll::new()?;
     let mut events = Events::with_capacity(128);
 
-    let addr: SocketAddr = "127.0.0.1:8080".parse().unwrap();
     let mut listener = mio::net::TcpListener::bind(addr)?;
 
     const SERVER: Token = Token(0);
